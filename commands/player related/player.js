@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
-const { db } = require("../../libs/database");
+const { db } = require("../../libs/database.ts");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -43,7 +43,7 @@ module.exports = {
 
 			player = await db
 				.collection("Players")
-				.getFirstListItem(`first_name = '${target}'`, (options = {}))
+				.getFirstListItem(`first_name = '${target}'`)
 				.catch(() => {
 					interaction.reply(
 						`No player found with first name '**${nameSearch}**'`

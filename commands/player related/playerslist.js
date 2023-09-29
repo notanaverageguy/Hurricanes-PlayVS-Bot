@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
-const { db } = require("../../libs/database");
+const { db } = require("../../libs/database.ts");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -29,8 +29,8 @@ module.exports = {
 					"https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp",
 				url: "https://discord.js.org",
 			});
-
-		for (const player of playerList) {
+			
+		for (const player of playerList.items) {
 			const team = await db.collection("Teams").getOne(player.team);
 			exampleEmbed.addFields({
 				name: `${player.first_name} ${player.last_name}`,
