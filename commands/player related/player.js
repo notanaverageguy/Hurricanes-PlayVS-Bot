@@ -8,31 +8,56 @@ module.exports = {
 		.setDescription("Gets stats of a single player")
 		.addStringOption((option) =>
 			option
+				.setName("id")
+				.setDescription("The ID of player to get stats of")
+				.setRequired(false)
+		)
+		.addStringOption((option) =>
+			option
 				.setName("firstname")
-				.setDescription("That player to get stats of")
-				.setRequired(true)
+				.setDescription("The name of player to get stats of")
+				.setRequired(false)
 		),
 
 	args: [],
 	permissions: [],
 
 	async execute(interaction) {
-		var target = interaction.options.getString("firstname");
-		target = target.toLowerCase();
-		target = target.charAt(0).toUpperCase() + target.slice(1);
-
+		const idSearch = interaction.options.getString("id");
+		const nameSearch = interaction.options.getString("firstname");
 		var player;
-		try {
+
+		if (idSearch != null) {
 			player = await db
 				.collection("Players")
-				.getFirstListItem(`first_name = '${target}'`, (options = {}));
-		} catch (ClientResponseError) {
-			return interaction.reply("Player doesn't exist");
+				.getOne(interaction.options.getString("id"))
+				.catch(() => {
+					interaction.reply(
+						`No player found with ID '**${idSearch}**'`
+					);
+				});
+		} else if (nameSearch != null) {
+			var target = interaction.options.getString("firstname");
+			target = target.toLowerCase();
+			target = target.charAt(0).toUpperCase() + target.slice(1);
+
+			player = await db
+				.collection("Players")
+				.getFirstListItem(`first_name = '${target}'`, (options = {}))
+				.catch(() => {
+					interaction.reply(
+						`No player found with first name '**${nameSearch}**'`
+					);
+				});
+		} else {
+			interaction.reply(
+				`You must input either an *ID* or a *first name*`
+			);
+			return;
 		}
 
 		const team = await db.collection("Teams").getOne(player.team);
-
-		const exampleEmbed = new EmbedBuilder()
+		const embed = new EmbedBuilder()
 			.setColor(0x0099ff)
 			.setTitle(`Stats for ${player.first_name}`)
 			.setAuthor({
@@ -61,10 +86,10 @@ module.exports = {
 					inline: true,
 				}
 			)
-      .setFooter({
+			.setFooter({
 				text: `Player id: ${player.id}`,
 			});
 
-		interaction.reply({ embeds: [exampleEmbed] });
+		interaction.reply({ embeds: [embed] });
 	},
 };
