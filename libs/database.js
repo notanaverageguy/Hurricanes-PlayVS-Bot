@@ -1,3 +1,5 @@
-const { PocketBase } = require('pocketbase');
+const PocketBase = require('pocketbase/cjs')
 
-export const db = new PocketBase('http://127.0.0.1:8090');
+module.exports = {
+    db: new PocketBase('http://127.0.0.1:8090')
+}
