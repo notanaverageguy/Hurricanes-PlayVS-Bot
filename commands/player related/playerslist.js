@@ -17,8 +17,8 @@ module.exports = {
 	permissions: [],
 
 	async execute(interaction) {
-		var playerList = await db.collection("Players").getFullList({
-			sort: "role"
+		var playerList = await db.collection("Players").getList(1, 9, {
+			sort: "team,role"
 		});
 		const exampleEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)

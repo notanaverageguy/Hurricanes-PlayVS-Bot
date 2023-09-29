@@ -33,7 +33,11 @@ module.exports = {
 				.setName("team")
 				.setDescription("The team the player is on")
 				.setRequired(true)
-				.addChoices({ name: "Rocket League", value: "e8mjbfqf0ho1wz2" })
+				.addChoices(
+					{ name: "Super Smash Bros.", value: "lbvz4f8cs2cwgsg" },
+					{ name: "Leauge of Legends", value: "v799hjxptlm89pi" },
+					{ name: "Rocket League", value: "e8mjbfqf0ho1wz2" },
+				)
 		),
 	args: [],
 	permissions: [],
