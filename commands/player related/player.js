@@ -30,7 +30,7 @@ module.exports = {
 		if (idSearch != null) {
 			player = await db
 				.collection("Players")
-				.getOne(interaction.options.getString("id"))
+				.getOne(idSearch)
 				.catch(() => {
 					interaction.reply(
 						`No player found with ID '**${idSearch}**'`
@@ -91,6 +91,8 @@ module.exports = {
 				});
 
 			interaction.reply({ embeds: [embed] });
-		} catch {}
+		} catch {
+			console.log('error')
+		}
 	},
 };

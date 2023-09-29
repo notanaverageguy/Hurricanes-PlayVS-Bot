@@ -36,7 +36,8 @@ async function calcGameScore(id) {
 			filter: `game.id = "${id}"`,
 		})
 		.catch(() => {
-			return console.log("couldnt find games");
+			console.log("couldnt find games");
+            return
 		});
     
     const data = {
@@ -52,7 +53,7 @@ async function calcGameScore(id) {
         }
     }
 
-    await db.collection("Games").update(id, {score: `${data.wins} - ${data.losses}`});
+    return await db.collection("Games").update(id, {score: `${data.wins} - ${data.losses}`});
 }
 
 module.exports = {
