@@ -4,7 +4,7 @@ const { db } = require("../../libs/database");
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("playerslist")
+		.setName("playerlist")
 		.setDescription("Gets all players")
 		.addIntegerOption((option) =>
 			option
@@ -31,9 +31,10 @@ module.exports = {
 			});
 
 		for (const player of playerList) {
+			const team = await db.collection("Teams").getOne(player.team);
 			exampleEmbed.addFields({
-				name: `${player.first_name} ${player.last_name} `,
-				value: `${player.role}`,
+				name: `${player.first_name} ${player.last_name}`,
+				value: `\`ID: ${player.id}\`\n**Team:** ${team.name}\n**Role:** ${player.role}`,
 				inline: true,
 			});
 		}

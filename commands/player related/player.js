@@ -51,7 +51,7 @@ module.exports = {
 				});
 		} else {
 			interaction.reply(
-				`You must input either an *ID* or a *first name*`
+				`You must input either an ***ID*** or a ***first name***`
 			);
 			return;
 		}
