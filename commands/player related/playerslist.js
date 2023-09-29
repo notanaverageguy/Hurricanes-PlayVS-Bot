@@ -17,7 +17,9 @@ module.exports = {
 	permissions: [],
 
 	async execute(interaction) {
-		var playerList = await db.collection("Players").getFullList();
+		var playerList = await db.collection("Players").getFullList({
+			sort: "role"
+		});
 		const exampleEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)
 			.setTitle("Players on the Hurricanes Team")
@@ -30,7 +32,7 @@ module.exports = {
 
 		for (const player of playerList) {
 			exampleEmbed.addFields({
-				name: `${player.name}`,
+				name: `${player.first_name} ${player.last_name} `,
 				value: `${player.role}`,
 				inline: true,
 			});

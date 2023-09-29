@@ -22,7 +22,7 @@ for (const folder of commandFolders) {
 
 // Development commands
 const development = [];
-const developmentPath = path.join(__dirname, "commands");
+const developmentPath = path.join(__dirname, "development commands");
 const developmentFolders = fs.readdirSync(developmentPath);
 
 for (const folder of developmentFolders) {

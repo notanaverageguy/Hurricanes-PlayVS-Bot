@@ -9,7 +9,7 @@ module.exports = {
     permissions: [],
 
 	async execute(interaction) { 
-        const config = require('../config.json')
+        const config = require('../../config.json')
         if(!interaction.user.id == config.owner) {
             interaction.reply({ content: 'Must be naag to use this command', ephemeral: true})
             console.log(`${interaction.user.username}#${interaction.user.discriminator} attempted to clear the console`)
