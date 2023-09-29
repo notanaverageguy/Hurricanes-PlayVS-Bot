@@ -18,11 +18,11 @@ module.exports = {
 
 			try{		
 				//Normal Commands
-				const commandsPath = `${args[1]}/commands`;
+				const commandsPath = `./commands`;
 				const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 				for (const file of commandFiles) {
-					delete require.cache[require.resolve(`${args[1]}/commands/${file}`)]
+					delete require.cache[require.resolve(`../commands/${file}`)]
 					const command = require(`../commands/${file}`);
 					args[0].commands.set(command.data.name, command);
 				}
@@ -43,6 +43,7 @@ module.exports = {
 
 				interaction.reply({ content: 'Bot successfully loaded', ephemeral: true});
 			} catch (e){
+				console.log(e);
 				interaction.reply({ content: 'Error reloading bot', ephemeral: true});
 			}
 	},
