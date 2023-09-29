@@ -9,7 +9,11 @@ module.exports = {
     .addStringOption(option =>
 		option.setName('firstname')
 			.setDescription('That player to get history of')
-			.setRequired(true)),
+			.setRequired(true))
+    .addIntegerOption(option =>
+		option.setName('page')
+			.setDescription('Page of matches to display ')
+			.setRequired(false)),
 
   args: [],
   permissions: [],
@@ -19,6 +23,7 @@ module.exports = {
     target = target.toLowerCase();
     target = target.charAt(0).toUpperCase() + target.slice(1);
 
+    const page = interaction.options.getInteger('page') ?? 0;
 
     var player;
     try {
@@ -28,23 +33,28 @@ module.exports = {
     }
 
     const team = await db.collection("Teams").getOne(player.team);
-    var matches = await db.collection("Matches").getFullList();
+    var gameQuery = await db.collection("Games").getList(page,10);
 
-    var tempa = [];
-    for(const match of matches) {
-        if(match.players.includes(player.id)) tempa.push(match);
+    var games = [];
+    for(const game of gameQuery.items) {
+        if(game.players.includes(player.id)) games.push(game);
     }
-    matches = tempa; delete tempa;
 
 	const exampleEmbed = new EmbedBuilder()
 	.setColor(0x0099FF)
 	.setTitle(`Stats for ${player.name}`)
 	.setAuthor({ name: 'Bot made by Naag', iconURL: 'https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp', url: 'https://discord.js.org' })
 	.addFields(
-		{ name: 'role', value: player.role },
 		{ name: 'Team', value: team.name, inline: true },
-		{ name: 'Games Played', value: `${player.games_played}`, inline: true },
+		{ name: 'role', value: player.role, inline: true },
 	)
+    .setFooter({ text: `Showing page ${gameQuery.page} out of ${gameQuery.totalPages}` });
+
+    for(const game of games) {
+        exampleEmbed.addFields({
+            name: `${game.opponent} ( ${game.win ? "won" : "loss"} )`, value: `Total Matches: ${game.total_matches}\nwon: ${game.wins} loses: ${game.losses}\nplayed: ${game.played}\nid: ${game.id}`
+        })
+    }
 
     interaction.reply({ embeds: [exampleEmbed] });
   },
