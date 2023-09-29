@@ -5,7 +5,7 @@ const { db } = require("../libs/database");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("player")
-		.setDescription("Gets a single player")
+		.setDescription("Gets stats of a single player")
 		.addStringOption((option) =>
 			option
 				.setName("firstname")
@@ -60,7 +60,10 @@ module.exports = {
 					value: `${player.games_lost}`,
 					inline: true,
 				}
-			);
+			)
+      .setFooter({
+				text: `Player id: ${player.id}`,
+			});
 
 		interaction.reply({ embeds: [exampleEmbed] });
 	},

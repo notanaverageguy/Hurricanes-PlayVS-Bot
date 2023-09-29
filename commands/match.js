@@ -23,7 +23,7 @@ module.exports = {
 		try {
 			match = await db
 				.collection("Matches")
-				.getFirstListItem(`game = '${target}'`, (options = {}));
+				.getFirstListItem(`game = '${target}'`);
 		} catch (ClientResponseError) {
 			return interaction.reply("Match doesn't exist");
 		}
