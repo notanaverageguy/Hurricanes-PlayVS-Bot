@@ -5,7 +5,7 @@ const fs = require('fs')
 
 // Global Commands
 const commandsPath = `${__dirname}/commands`;
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(commandsPath).filter(file => ['.js', '.ts'].some(char => file.endsWith(char)));
 
 var commands = [];
 for (const file of commandFiles) {
@@ -16,7 +16,7 @@ for (const file of commandFiles) {
 
 // Development commands
 var developmentPath = `${__dirname}/development commands`;
-const developmentFiles = fs.readdirSync(developmentPath).filter(file => file.endsWith('.js'));
+const developmentFiles = fs.readdirSync(developmentPath).filter(file => ['.js', '.ts'].some(char => file.endsWith(char)));
 
 var development = [];
 for(const file of developmentFiles) {

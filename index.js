@@ -9,7 +9,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 client.commands = new Map();
 const commandsPath = `${__dirname}/commands`;
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(commandsPath).filter(file => ['.js', '.ts'].some(char => file.endsWith(char)));
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
@@ -19,7 +19,7 @@ for (const file of commandFiles) {
 // ------------------------------------------------------------------------------------------ Development Command Handler
 
 const developmentPath = `${__dirname}/development commands`;
-const developmentFiles = fs.readdirSync(developmentPath).filter(file => file.endsWith('.js'));
+const developmentFiles = fs.readdirSync(developmentPath).filter(file => ['.js', '.ts'].some(char => file.endsWith(char)));
 
 for (const file of developmentFiles) {
 	const command = require(`./development commands/${file}`);
@@ -28,7 +28,7 @@ for (const file of developmentFiles) {
 
 //------------------------------------------------------------------------------------------ Event Handler
 const eventsPath = `${__dirname}/events`
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+const eventFiles = fs.readdirSync(eventsPath).filter(file => ['.js', '.ts'].some(char => file.endsWith(char)));
 
 for (const file of eventFiles) {
 	const filePath = `${eventsPath}/${file}`
