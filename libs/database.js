@@ -8,7 +8,8 @@ async function calcPlayerWins(id) {
 			filter: `players.id ?~ "${id}"`,
 		})
 		.catch(() => {
-			return console.log("couldnt find games");
+			console.log("couldnt find games");
+            return
 		});
 
 	const data = {
@@ -25,7 +26,7 @@ async function calcPlayerWins(id) {
 			data.games_lost++;
 		}
 	}
-	await db.collection("Players").update(id, data);
+	return await db.collection("Players").update(id, data);
 }
 
 async function calcGameScore(id) {
