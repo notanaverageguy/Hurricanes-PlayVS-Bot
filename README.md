@@ -16,12 +16,43 @@ npm install
 
 This section will be divided into the collections we are working on. 
 
-#### Games
+#### Teams
 
 > All API rules are public
 - name: string
+- players: number
+- captains: number
+
+#### Players
+
+> All API rules are public
+- first_name: string
+- last_name: string
+- role: string
+- team: singular relationship with Teams
+- games_played: numer
+- games_won: number
+- games_lost: number
+
+#### Games
+
+> All API rules are public
+- opponent: string
 - score: string
-- other stuff I forget
+- win: boolean
+- team: singular relationship with Teams
+- players: multiple relationship with Players
+- played: datetime
+
+#### Rounds
+
+> All API rules are public
+- opponent: string
+- score: string
+- win: boolean
+- game: singular relationship with Games
+- players: multiple relationship with Players
+- played: datetime
 
 ## Usage
 ```sh

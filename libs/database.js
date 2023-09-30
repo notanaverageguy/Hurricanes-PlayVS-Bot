@@ -55,7 +55,10 @@ async function calcGameScore(id) {
 
 	return await db
 		.collection("Games")
-		.update(id, { score: `${data.wins} - ${data.losses}` });
+		.update(id, {
+			score: `${data.wins} - ${data.losses}`,
+			win: data.wins > data.losses,
+		});
 }
 
 async function findPlayer(search) {

@@ -63,7 +63,7 @@ module.exports = {
             played: `${time} 15:30:00Z`
         }
 
-        const record = await db.collection('Games').create(data);
+        await db.collection('Games').create(data);
 
 		interaction.reply(`Successfully created game`);
 	},
