@@ -18,7 +18,7 @@ module.exports = {
 
 	async execute(interaction) {
 		var playerList = await db.collection("Players").getList(1, 9, {
-			sort: "team,role"
+			sort: "team,role",
 		});
 		const exampleEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)
@@ -29,7 +29,7 @@ module.exports = {
 					"https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp",
 				url: "https://discord.js.org",
 			});
-			
+
 		for (const player of playerList.items) {
 			const team = await db.collection("Teams").getOne(player.team);
 			exampleEmbed.addFields({

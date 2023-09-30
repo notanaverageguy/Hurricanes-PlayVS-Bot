@@ -35,7 +35,11 @@ module.exports = {
 			const team = await db.collection("Teams").getOne(game.team);
 			exampleEmbed.addFields({
 				name: `vs. ${upperCaseEveryWord(game.opponent)}`,
-				value: `\`ID: ${game.id}\`\n**Team:** ${team.name}\n**Score:** ${game.score}\n**Date:** ${game.played.split(" ")[0]}`,
+				value: `\`ID: ${game.id}\`\n**Team:** ${
+					team.name
+				}\n**Score:** ${game.score}\n**Date:** ${
+					game.played.split(" ")[0]
+				}`,
 				inline: true,
 			});
 		}

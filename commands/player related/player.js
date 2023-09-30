@@ -37,7 +37,7 @@ module.exports = {
 			.addFields(
 				{ name: "Team", value: team.name, inline: true },
 				{ name: "Role", value: player.role, inline: true },
-				{ name: "\u200B", value: "\u200B", inline:true },
+				{ name: "\u200B", value: "\u200B", inline: true },
 				{
 					name: "Games Played",
 					value: `${player.games_played}`,
