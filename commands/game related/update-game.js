@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 const { db, findPlayer } = require("../../libs/database.js");
-const { upperCaseEveryWord } = require("../../libs/utils.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -50,6 +49,11 @@ module.exports = {
 
 	async execute(interaction) {
 		const id = interaction.options.getString("id");
+		const team = interaction.options.getString("team");
+		const opponent = interaction.options.getString("opponent");
+		const time = interaction.options.getString("time");
+		var playerSearches = interaction.options.getString("players");
+
 		const game = await db
 			.collection("Games")
 			.getOne(id)
@@ -57,17 +61,11 @@ module.exports = {
 				return null;
 			});
 
-		if (game == null)
-			return interaction.reply(`Game with id \`${id}\` not found`);
-
 		const data = {};
-
-		const team = interaction.options.getString("team");
-		const opponent = interaction.options.getString("opponent");
-		const time = interaction.options.getString("time");
-		var playerSearches = interaction.options.getString("players");
 		if (team != null) data.team = team;
 		if (opponent != null) data.opponent = opponent.toLowerCase();
+		if (game == null)
+			return interaction.reply(`Game with id \`${id}\` not found`);
 		if (time != null) {
 			const timeRegex =
 				/^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01])$/gm;
@@ -75,7 +73,6 @@ module.exports = {
 				return interaction.reply("Invalid Time");
 			data.played = `${time} 15:30:00Z`;
 		}
-
 		if (playerSearches != null) {
 			playerSearches = playerSearches.split(",").map((player) => {
 				return player.trim();

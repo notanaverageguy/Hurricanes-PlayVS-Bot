@@ -41,7 +41,7 @@ module.exports = {
 	permissions: [],
 
 	async execute(interaction) {
-		const opponent = interaction.options.getString("opponent");
+		const opponent = interaction.options.getString("opponent").toLowerCase();
 		const team = interaction.options.getString("team");
 		const playerSearches = interaction.options
 			.getString("players")

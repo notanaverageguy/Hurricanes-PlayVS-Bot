@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { db } = require("../../libs/database.js");
+const { db, findPlayer } = require("../../libs/database.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -7,8 +7,10 @@ module.exports = {
 		.setDescription("Update a player's profile")
 		.addStringOption((option) =>
 			option
-				.setName("id")
-				.setDescription("ID of player")
+				.setName("search")
+				.setDescription(
+					"Can search by id, first name, last name, first and last name"
+				)
 				.setRequired(true)
 		)
 		.addStringOption((option) =>
@@ -57,26 +59,24 @@ module.exports = {
 	permissions: [],
 
 	async execute(interaction) {
-		let playerID = interaction.options.getString("id");
-		var player = await db
-			.collection("Players")
-			.getOne(interaction.options.getString("id"))
-			.catch(() => {
-				interaction.reply(`No player found with ID '**${playerID}**'`);
-			});
+		const search = interaction.options.getString("search");
+		const first_name = interaction.options.getString("firstname");
+		const last_name = interaction.options.getString("lastname");
+		const team = interaction.options.getString("team");
+		const role = interaction.options.getString("role");
+		const won = interaction.options.getInteger("games_won");
+		const lost = interaction.options.getInteger("games_lost");
 
-		if (interaction.options.getString("firstname") != null)
-			player.first_name = interaction.options.getString("firstname");
-		if (interaction.options.getString("lastname") != null)
-			player.last_name = interaction.options.getString("lastname");
-		if (interaction.options.getString("team") != null)
-			player.team = interaction.options.getString("team");
-		if (interaction.options.getString("role") != null)
-			player.role = interaction.options.getString("role");
-		if (interaction.options.getInteger("games_won") != null)
-			player.games_won = interaction.options.getInteger("games_won");
-		if (interaction.options.getInteger("games_lost") != null)
-			player.games_lost = interaction.options.getInteger("games_lost");
+		const player = await findPlayer(search);
+		if (player == null)
+			return interaction.reply(`No player found with search ${search}`);
+
+		if (first_name != null) player.first_name = first_name;
+		if (last_name != null) player.last_name = last_name;
+		if (team != null) player.team = team;
+		if (role != null) player.role = role;
+		if (won != null) player.games_won = won;
+		if (lost != null) player.games_lost = lost;
 
 		player.games_played = player.games_won + player.games_lost;
 		await db.collection("Players").update(playerID, player);

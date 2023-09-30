@@ -9,7 +9,7 @@
   "name": "hurricanes-playvs-bot",
   "description": "Offical Discord bot for the Hurricanes Esports team.",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.j",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,16 +1,16 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
-const { db, calcGameScore } = require("../../libs/database.js");
+const { db } = require("../../libs/database.js");
 const { upperCaseEveryWord } = require("../../libs/utils.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("game")
-		.setDescription("Gets stats of a game")
+		.setName("round")
+		.setDescription("Gets stats of a round")
 		.addStringOption((option) =>
 			option
 				.setName("id")
-				.setDescription("ID of the game")
+				.setDescription("ID of the round")
 				.setRequired(true)
 		),
 
@@ -19,20 +19,21 @@ module.exports = {
 
 	async execute(interaction) {
 		const idSearch = interaction.options.getString("id");
-		var game = await db
-			.collection("Games")
+		var round = await db
+			.collection("Rounds")
 			.getOne(idSearch)
 			.catch(() => {
 				return null;
 			});
-		if (!game)
-			return interaction.reply(`No game found with ID '**${idSearch}**'`);
+		if (!round)
+			return interaction.reply(
+				`No round found with ID '**${idSearch}**'`
+			);
 
-		game = await calcGameScore(game.id);
-		const team = await db.collection("Teams").getOne(game.team);
+		const team = await db.collection("Teams").getOne(round.team);
 		const embed = new EmbedBuilder()
 			.setColor(0x0099ff)
-			.setTitle(`vs. ${upperCaseEveryWord(game.opponent)}`)
+			.setTitle(`vs. ${upperCaseEveryWord(round.opponent)}`)
 			.setAuthor({
 				name: "Bot made by Naag",
 				iconURL:
@@ -41,40 +42,20 @@ module.exports = {
 			})
 			.addFields(
 				{ name: "Team", value: team.name, inline: true },
-				{ name: "Score", value: game.score, inline: true },
+				{ name: "Score", value: round.score, inline: true },
 				{
-					name: "Date",
-					value: game.played.split(" ")[0],
+					name: "Round #",
+					value: `${round.round}`,
 					inline: true,
 				}
 			)
 			.setFooter({
-				text: `Game id: ${game.id}`,
+				text: `Round id: ${round.id}`,
 			});
 
-		// Getting rounds
-		const rounds = await db.collection("Rounds").getFullList({
-			filter: `game.id = "${game.id}"`,
-		});
-
-		for (const index in rounds) {
-			const round = rounds[index];
-
-			embed.addFields({
-				name: `Round ${round.round}`,
-				value: `\`ID: ${round.id}\`\n**Score:** *${round.score}*\n**Outcome:** *${round.won ? "won" : "loss"}*`,
-				inline: true,
-			});
-		}
-
-		embed.addFields({
-			name: "\u200B",
-			value: "\u200B",
-			inline: false,
-		});
 
 		// Getting players
-		for (var player of game.players) {
+		for (var player of round.players) {
 			player = await db.collection("Players").getOne(player);
 			embed.addFields({
 				name: `**${upperCaseEveryWord(player.first_name)}**`,
@@ -82,6 +63,10 @@ module.exports = {
 				inline: true,
 			});
 		}
+
+        embed.addFields({
+            name: `**Date Time**`, value: `${round.played.split(" ")[0]} ${round.played.split(" ")[1].split(".")[0]}`
+        })
 
 		interaction.reply({ embeds: [embed] });
 	},
