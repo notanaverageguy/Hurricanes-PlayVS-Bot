@@ -17,7 +17,8 @@ module.exports = {
 	permissions: [],
 
 	async execute(interaction) {
-		var playerList = await db.collection("Players").getList(1, 9, {
+		const page = interaction.options.getInteger("page") ?? 1;
+		var playerList = await db.collection("Players").getList(page, 9, {
 			sort: "team,role",
 		});
 		const exampleEmbed = new EmbedBuilder()
@@ -28,7 +29,8 @@ module.exports = {
 				iconURL:
 					"https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp",
 				url: "https://discord.js.org",
-			});
+			})
+			.setFooter({text: `Page ${page} out of ${playerList.totalPages}`});
 
 		for (const player of playerList.items) {
 			const team = await db.collection("Teams").getOne(player.team);

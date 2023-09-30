@@ -18,7 +18,8 @@ module.exports = {
 	permissions: [],
 
 	async execute(interaction) {
-		var gameList = await db.collection("Games").getList(1, 9, {
+		const page = interaction.options.getInteger("page") ?? 1;
+		var gameList = await db.collection("Games").getList(page, 9, {
 			sort: "played",
 		});
 		const exampleEmbed = new EmbedBuilder()
@@ -29,7 +30,8 @@ module.exports = {
 				iconURL:
 					"https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp",
 				url: "https://discord.js.org",
-			});
+			})
+			.setFooter({text: `Page ${page} out of ${gameList.totalPages}`});
 
 		for (const game of gameList.items) {
 			const team = await db.collection("Teams").getOne(game.team);
