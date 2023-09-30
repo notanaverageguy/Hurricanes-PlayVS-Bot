@@ -9,7 +9,7 @@ async function calcPlayerWins(id) {
 		})
 		.catch(() => {
 			console.log("couldnt find games");
-            return
+			return;
 		});
 
 	const data = {
@@ -37,27 +37,72 @@ async function calcGameScore(id) {
 		})
 		.catch(() => {
 			console.log("couldnt find games");
-            return
+			return;
 		});
-    
-    const data = {
-        wins: 0,
-        losses: 0,
-    }
 
-    for(const round of rounds) {
-        if(round.won) {
-            data.wins ++;
-        } else {
-            data.losses ++;
-        }
-    }
+	const data = {
+		wins: 0,
+		losses: 0,
+	};
 
-    return await db.collection("Games").update(id, {score: `${data.wins} - ${data.losses}`});
+	for (const round of rounds) {
+		if (round.won) {
+			data.wins++;
+		} else {
+			data.losses++;
+		}
+	}
+
+	return await db
+		.collection("Games")
+		.update(id, { score: `${data.wins} - ${data.losses}` });
+}
+
+async function findPlayer(search) {
+	var player = null;
+	const search_terms = search.split(" ");
+	if (search_terms.length == 1) {
+		player = await db
+			.collection("Players")
+			.getOne(search)
+			.catch(() => {
+				return null;
+			});
+	}
+
+	if (player) return player;
+	if (search_terms.length == 1) {
+		player = await db
+			.collection("Players")
+			.getFirstListItem(`first_name = '${search}'`)
+			.catch(() => {
+				return null;
+			});
+
+		if (!player) {
+			player = await db
+				.collection("Players")
+				.getFirstListItem(`last_name = '${search}'`)
+				.catch(() => {
+					return null;
+				});
+		}
+	} else if (search_terms.length == 2) {
+		player = await db
+			.collection("Players")
+			.getFirstListItem(
+				`first_name = '${search_terms[0]}' && last_name = '${search_terms[1]}'`
+			)
+			.catch(() => {
+				return null;
+			});
+	}
+	return player;
 }
 
 module.exports = {
 	db: db,
-    calcGameScore: calcGameScore,
-    calcPlayerWins: calcPlayerWins,
+	calcGameScore: calcGameScore,
+	calcPlayerWins: calcPlayerWins,
+	findPlayer: findPlayer,
 };
