@@ -69,7 +69,11 @@ module.exports = {
 				.addFields(
 					{ name: "Team", value: team.name, inline: true },
 					{ name: "Score", value: game.score, inline: true },
-					{ name: "Date", value: game.played.split(" ")[0], inline: true }
+					{
+						name: "Date",
+						value: game.played.split(" ")[0],
+						inline: true,
+					}
 				)
 				.setFooter({
 					text: `Game id: ${game.id}`,

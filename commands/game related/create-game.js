@@ -25,7 +25,9 @@ module.exports = {
 		.addStringOption((option) =>
 			option
 				.setName("players")
-				.setDescription("Seperate by comma. Can search by id, first name, last name, first and last name")
+				.setDescription(
+					"Seperate by comma. Can search by id, first name, last name, first and last name"
+				)
 				.setRequired(true)
 		)
 		.addStringOption((option) =>
@@ -40,30 +42,40 @@ module.exports = {
 
 	async execute(interaction) {
 		const opponent = interaction.options.getString("opponent");
-        const team = interaction.options.getString("team");
-        const playerIDs = interaction.options.getString("players").split(",").map(player => {return player.trim()});
-        const time = interaction.options.getString("time");
+		const team = interaction.options.getString("team");
+		const playerSearches = interaction.options
+			.getString("players")
+			.split(",")
+			.map((player) => {
+				return player.trim();
+			});
+		const time = interaction.options.getString("time");
 
-        const timeRegex = /^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01])$/gm;
-        if(timeRegex.exec(time) == null ) return interaction.reply("Invalid Time");
+		const timeRegex =
+			/^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01])$/gm;
+		if (timeRegex.exec(time) == null)
+			return interaction.reply("Invalid Time");
 
-        const players = [];
-        for(var name of playerIDs) {
-            const player = await findPlayer(name);
-            if(!player) return interaction.reply(`Invalid player search \`${name}\``);
-            players.push(player);
-        }
+		const players = [];
+		for (var name of playerSearches) {
+			const player = await findPlayer(name);
+			if (!player)
+				return interaction.reply(`Invalid player search \`${name}\``);
+			players.push(player);
+		}
 
-        const data = {
-            opponent: opponent.toLowerCase(),
-            score: "0 - 0",
-            win: false,
-            team: team,
-            players: players.map( player => {return player.id}),
-            played: `${time} 15:30:00Z`
-        }
+		const data = {
+			opponent: opponent.toLowerCase(),
+			score: "0 - 0",
+			win: false,
+			team: team,
+			players: players.map((player) => {
+				return player.id;
+			}),
+			played: `${time} 15:30:00Z`,
+		};
 
-        await db.collection('Games').create(data);
+		await db.collection("Games").create(data);
 
 		interaction.reply(`Successfully created game`);
 	},

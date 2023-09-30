@@ -12,9 +12,7 @@ Offical Discord bot for the Hurricanes Esports team.
 npm install
 ```
 
-### Database setup (via [PocketBase](https://pocketbase.io/docs))
-
-This section will be divided into the collections we are working on. 
+### Database collections setup (via [PocketBase](https://pocketbase.io/docs))
 
 #### Teams
 
