@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField } = require("discord.js");
 const { db, findPlayer } = require("../../libs/database.js");
 
 module.exports = {
@@ -40,9 +40,7 @@ module.exports = {
 		),
 
 	args: [],
-	user_permissions: [
-		PermissionsBitField.Flags.ManageNicknames
-	],
+	user_permissions: [PermissionsBitField.Flags.ManageNicknames],
 	bot_permissions: [],
 
 	async execute(interaction) {
@@ -59,19 +57,28 @@ module.exports = {
 			.replace(" ", "");
 		const scoreRegex = /^[0-9]+-[0-9]+$/gm;
 		if (scoreRegex.exec(score) == null)
-			return interaction.reply("Invalid Score");
+			return interaction.reply({
+				content: "Invalid Score",
+				ephemeral: true,
+			});
 
 		const time = interaction.options.getString("time").trim();
 		const timeRegex =
 			/^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01]) (?:(?:[0-1]?[0-9])|(?:2[04])):(?:[0-5]?[0-9]):(?:[0-5]?[0-9])$/gm;
 		if (timeRegex.exec(time) == null)
-			return interaction.reply("Invalid Time");
+			return interaction.reply({
+				content: "Invalid Time",
+				ephemeral: true,
+			});
 
 		const players = [];
 		for (var name of playerSearches) {
 			const player = await findPlayer(name);
 			if (!player)
-				return interaction.reply(`Invalid player search \`${name}\``);
+				return interaction.reply({
+					content: `Invalid player search \`${name}\``,
+					ephemeral: true,
+				});
 			players.push(player);
 		}
 
@@ -83,14 +90,18 @@ module.exports = {
 				return null;
 			});
 
-		if (game == null) return interaction.reply(`Invalid game id \`${id}\``);
+		if (game == null)
+			return interaction.reply({
+				content: `Invalid game id \`${id}\``,
+				ephemeral: true,
+			});
 
 		const data = {
 			round: interaction.options.getInteger("round"),
 			opponent: game.opponent,
 			score: score.replace("-", " - "),
 			win: score.split("-")[0] > score.split("-")[1],
-            game: game.id,
+			game: game.id,
 			team: game.team,
 			players: players.map((player) => {
 				return player.id;

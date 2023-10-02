@@ -88,6 +88,7 @@ module.exports = {
 		const message = await interaction.reply({
 			embeds: [helpCenter],
 			components: [button],
+			ephemeral: true,
 		});
 		const collector = await message.createMessageComponentCollector();
 
@@ -95,19 +96,19 @@ module.exports = {
 			if (i.user.id !== interaction.user.id) {
 				return await i.reply({
 					content: `Only ${interaction.user.tag} can use these buttons!`,
-					ephmeral: true,
+					ephemeral: true,
 				});
 			}
 
 			switch (i.customId) {
 				case "player":
-					await i.update({ embeds: [player], components: [button] });
+					await i.update({ embeds: [player], components: [button], ephemeral: true, });
 					break;
 				case "game":
-					await i.update({ embeds: [game], components: [button] });
+					await i.update({ embeds: [game], components: [button], ephemeral: true, });
 					break;
 				case "round":
-					await i.update({ embeds: [round], components: [button] });
+					await i.update({ embeds: [round], components: [button], ephemeral: true, });
 					break;
 			}
 		});

@@ -4,13 +4,13 @@ module.exports = {
 	name: "interactionCreate",
 	once: false,
 	execute(client, interaction) {
-		if (!interaction.isChatInputCommand()) return;
+		if (interaction.isChatInputCommand()) {
+			//Logging to channel
+			const auditChannel = client.channels.cache.get(config.auditChannelID);
+			auditChannel.send(
+				`\`${interaction.user.displayName}\` sent command \`${interaction.commandName}\``
+			);
 
-		//Logging to channel
-		const auditChannel = client.channels.cache.get(config.auditChannelID);
-		auditChannel.send(
-			`\`${interaction.user.displayName}\` sent command \`${interaction.commandName}\``
-		);
-
+		}
 	},
 };

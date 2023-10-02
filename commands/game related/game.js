@@ -25,9 +25,10 @@ module.exports = {
 		});
 
 		if (!games.length)
-			return interaction.reply(
-				`No game found with search '**${search}**'`
-			);
+			return interaction.reply({
+				content: `No game found with search '**${search}**'`,
+				ephemeral: true,
+			});
 
 		const embeds = [];
 		for (var game of games) {

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { PermissionsBitField } = require("discord.js");
 const { db } = require("../../libs/database.js");
-
+const config = require('../../config.json');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("delete-round")
@@ -13,9 +13,7 @@ module.exports = {
 				.setRequired(true)
 		),
 	args: [],
-	user_permissions: [
-        PermissionsBitField.Flags.KickMembers
-    ],
+	user_permissions: [PermissionsBitField.Flags.KickMembers],
 	bot_permissions: [],
 
 	async execute(interaction) {
@@ -24,12 +22,18 @@ module.exports = {
 		try {
 			await db.collection("Rounds").delete(roundID);
 		} catch (error) {
-            console.log(error)
+			console.log(error);
 			if (error.response.code == 404)
-				interaction.reply(`\`${roundID}\` did not exist in the database`);
+				interaction.reply({
+					content: `\`${roundID}\` did not exist in the database`,
+					ephemeral: true,
+				});
 
-            if(error.response.code == 400)
-                interaction.reply(`Failed to delete record. \nRound has relationship to something somehow\nNo idea how this error occured\nNaag is panicking`);
+			if (error.response.code == 400)
+				interaction.reply({
+					content: `Failed to delete record. \nRound has relationship to something somehow\nNo idea how this error occured\<@${config.owner}>`,
+					ephemeral: true,
+				});
 			return;
 		}
 

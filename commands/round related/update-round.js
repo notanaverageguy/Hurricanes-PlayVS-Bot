@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField } = require("discord.js");
 const { db, findPlayer } = require("../../libs/database.js");
 
 module.exports = {
@@ -46,9 +46,7 @@ module.exports = {
 		),
 
 	args: [],
-	user_permissions: [
-		PermissionsBitField.Flags.ManageNicknames
-	],
+	user_permissions: [PermissionsBitField.Flags.ManageNicknames],
 	bot_permissions: [],
 
 	async execute(interaction) {
@@ -66,7 +64,10 @@ module.exports = {
 			score = score.trim().replace(" ", "");
 			const scoreRegex = /^[0-9]+-[0-9]+$/gm;
 			if (scoreRegex.exec(score) == null)
-				return interaction.reply(`Invalid player score`);
+				return interaction.reply({
+					content: `Invalid player score`,
+					ephemeral: true,
+				});
 			data.score = score;
 		}
 		if (playerSearches != null) {
@@ -77,9 +78,10 @@ module.exports = {
 			for (var name of playerSearches) {
 				const player = await findPlayer(name);
 				if (!player)
-					return interaction.reply(
-						`Invalid player search \`${name}\``
-					);
+					return interaction.reply({
+						content: `Invalid player search \`${name}\``,
+						ephemeral: true,
+					});
 				players.push(player);
 			}
 			data.players = players.map((player) => {
@@ -90,7 +92,10 @@ module.exports = {
 			const timeRegex =
 				/^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01]) (?:(?:[0-1]?[0-9])|(?:2[04])):(?:[0-5]?[0-9]):(?:[0-5]?[0-9])$/gm;
 			if (timeRegex.exec(time) == null)
-				return interaction.reply(`Invalid time`);
+				return interaction.reply({
+					content: `Invalid time`,
+					ephemeral: true,
+				});
 			data.played = `${time}Z`;
 		}
 

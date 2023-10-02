@@ -27,9 +27,10 @@ module.exports = {
 				return null;
 			});
 		if (!round)
-			return interaction.reply(
-				`No round found with ID '**${idSearch}**'`
-			);
+			return interaction.reply({
+				content: `No round found with ID '**${idSearch}**'`,
+				ephemeral: true,
+			});
 
 		const team = await db.collection("Teams").getOne(round.team);
 		const embed = new EmbedBuilder()
@@ -54,7 +55,6 @@ module.exports = {
 				text: `Round id: ${round.id}`,
 			});
 
-
 		// Getting players
 		for (var player of round.players) {
 			player = await db.collection("Players").getOne(player);
@@ -65,9 +65,12 @@ module.exports = {
 			});
 		}
 
-        embed.addFields({
-            name: `**Date Time**`, value: `${round.played.split(" ")[0]} ${round.played.split(" ")[1].split(".")[0]}`
-        })
+		embed.addFields({
+			name: `**Date Time**`,
+			value: `${round.played.split(" ")[0]} ${
+				round.played.split(" ")[1].split(".")[0]
+			}`,
+		});
 
 		interaction.reply({ embeds: [embed] });
 	},

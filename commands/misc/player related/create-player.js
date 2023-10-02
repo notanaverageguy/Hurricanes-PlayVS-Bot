@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { PermissionsBitField } = require('discord.js');
-const { db } = require("../../libs/database.js");
+const { PermissionsBitField } = require("discord.js");
+const { db } = require("../../../libs/database.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -41,9 +41,7 @@ module.exports = {
 				)
 		),
 	args: [],
-	user_permissions: [
-		PermissionsBitField.Flags.ManageNicknames
-	],
+	user_permissions: [PermissionsBitField.Flags.ManageNicknames],
 	bot_permissions: [],
 
 	async execute(interaction) {

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField } = require("discord.js");
 const { db, findPlayer } = require("../../libs/database.js");
 
 module.exports = {
@@ -45,9 +45,7 @@ module.exports = {
 		),
 
 	args: [],
-	user_permissions: [
-		PermissionsBitField.Flags.ManageNicknames
-	],
+	user_permissions: [PermissionsBitField.Flags.ManageNicknames],
 	bot_permissions: [],
 
 	async execute(interaction) {
@@ -68,12 +66,18 @@ module.exports = {
 		if (team != null) data.team = team;
 		if (opponent != null) data.opponent = opponent.toLowerCase();
 		if (game == null)
-			return interaction.reply(`Game with id \`${id}\` not found`);
+			return interaction.reply({
+				content: `Game with id \`${id}\` not found`,
+				ephemeral: true,
+			});
 		if (time != null) {
 			const timeRegex =
 				/^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01])$/gm;
 			if (timeRegex.exec(time) == null)
-				return interaction.reply("Invalid Time");
+				return interaction.reply({
+					content: `Invalid Time`,
+					ephemeral: true,
+				});
 			data.played = `${time} 15:30:00Z`;
 		}
 		if (playerSearches != null) {
@@ -85,9 +89,10 @@ module.exports = {
 			for (var name of playerSearches) {
 				const player = await findPlayer(name);
 				if (!player)
-					return interaction.reply(
-						`Invalid player search \`${name}\``
-					);
+					return interaction.reply({
+						content: `Invalid player search \`${name}\``,
+						ephemeral: true,
+					});
 				players.push(player);
 			}
 			data.players = players.map((player) => {

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField } = require("discord.js");
 const { db, findPlayer } = require("../../libs/database.js");
 
 module.exports = {
@@ -39,13 +39,13 @@ module.exports = {
 		),
 
 	args: [],
-	user_permissions: [
-		PermissionsBitField.Flags.ViewAuditLog
-	],
+	user_permissions: [PermissionsBitField.Flags.ViewAuditLog],
 	bot_permissions: [],
 
 	async execute(interaction) {
-		const opponent = interaction.options.getString("opponent").toLowerCase();
+		const opponent = interaction.options
+			.getString("opponent")
+			.toLowerCase();
 		const team = interaction.options.getString("team");
 		const playerSearches = interaction.options
 			.getString("players")
@@ -58,13 +58,19 @@ module.exports = {
 		const timeRegex =
 			/^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01])$/gm;
 		if (timeRegex.exec(time) == null)
-			return interaction.reply("Invalid Time");
+			return interaction.reply({
+				content: "Invalid time",
+				ephemeral: true,
+			});
 
 		const players = [];
 		for (var name of playerSearches) {
 			const player = await findPlayer(name);
 			if (!player)
-				return interaction.reply(`Invalid player search \`${name}\``);
+				return interaction.reply({
+					content: `Invalid player ${name}`,
+					ephemeral: true,
+				});
 			players.push(player);
 		}
 

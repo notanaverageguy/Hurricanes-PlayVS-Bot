@@ -13,9 +13,7 @@ module.exports = {
 				.setRequired(true)
 		),
 	args: [],
-	user_permissions: [
-        PermissionsBitField.Flags.KickMembers
-    ],
+	user_permissions: [PermissionsBitField.Flags.KickMembers],
 	bot_permissions: [],
 
 	async execute(interaction) {
@@ -24,12 +22,18 @@ module.exports = {
 		try {
 			await db.collection("Games").delete(gameID);
 		} catch (error) {
-            console.log(error)
+			console.log(error);
 			if (error.response.code == 404)
-				interaction.reply(`\`${gameID}\` did not exist in the database`);
+				interaction.reply({
+					content: `\`${gameID}\` did not exist in the database`,
+					ephemeral: true,
+				});
 
-            if(error.response.code == 400)
-                interaction.reply(`Failed to delete record. \nGame has relations to rounds, make sure to remove game from all rounds.\nFor assistance contact naag`);
+			if (error.response.code == 400)
+				interaction.reply({
+					content: `Failed to delete record. \nGame has relations to rounds, make sure to remove game from all rounds.\nFor assistance contact naag`,
+					ephemeral: true,
+				});
 			return;
 		}
 
