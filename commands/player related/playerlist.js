@@ -14,7 +14,8 @@ module.exports = {
 		),
 
 	args: [],
-	permissions: [],
+	user_permissions: [],
+	bot_permissions: [],
 
 	async execute(interaction) {
 		const page = interaction.options.getInteger("page") ?? 1;

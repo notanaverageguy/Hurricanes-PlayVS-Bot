@@ -16,7 +16,8 @@ module.exports = {
 		),
 
 	args: [],
-	permissions: [],
+	user_permissions: [],
+	bot_permissions: [],
 
 	async execute(interaction) {
 		const search = interaction.options.getString("search");

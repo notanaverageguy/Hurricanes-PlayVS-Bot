@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const { PermissionsBitField } = require('discord.js');
 const { db, findPlayer } = require("../../libs/database.js");
 
 module.exports = {
@@ -38,7 +39,10 @@ module.exports = {
 		),
 
 	args: [],
-	permissions: [],
+	user_permissions: [
+		PermissionsBitField.Flags.ViewAuditLog
+	],
+	bot_permissions: [],
 
 	async execute(interaction) {
 		const opponent = interaction.options.getString("opponent").toLowerCase();

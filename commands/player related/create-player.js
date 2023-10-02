@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const { PermissionsBitField } = require('discord.js');
 const { db } = require("../../libs/database.js");
 
 module.exports = {
@@ -40,7 +41,8 @@ module.exports = {
 				)
 		),
 	args: [],
-	permissions: [],
+	user_permissions: [],
+	bot_permissions: [],
 
 	async execute(interaction) {
 		const data = {

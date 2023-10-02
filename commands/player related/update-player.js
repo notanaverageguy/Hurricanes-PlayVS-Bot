@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const { PermissionsBitField } = require('discord.js');
 const { db, findPlayer } = require("../../libs/database.js");
 
 module.exports = {
@@ -56,7 +57,8 @@ module.exports = {
 				.setRequired(false)
 		),
 	args: [],
-	permissions: [],
+	user_permissions: [],
+	bot_permissions: [],
 
 	async execute(interaction) {
 		const search = interaction.options.getString("search");

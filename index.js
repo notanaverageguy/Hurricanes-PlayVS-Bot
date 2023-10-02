@@ -83,21 +83,24 @@ client.on("interactionCreate", async (interaction) => {
 
 	try {
 		// Making sure they have permissions
-		if (command.permissions > 0) {
+		if (command.bot_permissions > 0) {
 			var botPerms = new PermissionsBitField(
 				interaction.guild.members.me.permissions
 			);
-			var userPerms = new PermissionsBitField(
-				interaction.memberPermissions
-			);
-
-			if (!botPerms.has(command.permissions)) {
+			if (!botPerms.has(command.bot_permissions)) {
 				return await interaction.reply({
 					content: "Bot is missing permissions for this",
 					ephemeral: true,
 				});
 			}
-			if (!userPerms.has(command.permissions)) {
+		}
+
+		if(command.user_permissions > 0) {
+			var userPerms = new PermissionsBitField(
+				interaction.memberPermissions
+			);
+
+			if (!userPerms.has(command.user_permissions)) {
 				return await interaction.reply({
 					content: "User is missing permissions for this",
 					ephemeral: true,
