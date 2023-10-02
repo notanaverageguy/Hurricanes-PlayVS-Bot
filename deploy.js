@@ -26,7 +26,7 @@ const developmentPath = path.join(__dirname, "development commands");
 const developmentFolders = fs.readdirSync(developmentPath);
 
 for (const folder of developmentFolders) {
-	const commandsPath = path.join(foldersPath, folder);
+	const commandsPath = path.join(developmentPath, folder);
 	const commandFiles = fs
 		.readdirSync(commandsPath)
 		.filter((file) => file.endsWith(".js"));
