@@ -1,7 +1,14 @@
-const { SlashCommandBuilder } = require("discord.js");
-const { PermissionsBitField } = require("discord.js");
-const { db, findPlayer } = require("../../libs/database.js");
+const {
+	SlashCommandBuilder,
+	PermissionsBitField,
+	EmbedBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+} = require("discord.js");
 
+const { db, findPlayer } = require("../../libs/database.js");
+const { upperCaseEveryWord } = require("../../libs/utils.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("create-game")
@@ -51,7 +58,7 @@ module.exports = {
 			.getString("players")
 			.split(",")
 			.map((player) => {
-				return player.trim();
+				return player.trim().toLowerCase();
 			});
 		const time = interaction.options.getString("time");
 
@@ -85,8 +92,92 @@ module.exports = {
 			played: `${time} 15:30:00Z`,
 		};
 
-		await db.collection("Games").create(data);
+		const confirmationEmbed = new EmbedBuilder()
+			.setColor(0x0099ff)
+			.setTitle("Confirm player creation")
+			.setAuthor({
+				name: "Bot made by Naag",
+				iconURL:
+					"https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp",
+				url: "https://discord.js.org",
+			})
+			.addFields(
+				{
+					name: "Opponent",
+					value: upperCaseEveryWord(data.opponent),
+					inline: true,
+				},
+				{
+					name: "Score",
+					value: data.score,
+					inline: true,
+				},
+				{
+					name: "Team",
+					value:
+						data.team == "lbvz4f8cs2cwgsg"
+							? "Smash"
+							: data.team == "v799hjxptlm89pi"
+							? "League"
+							: "Rocket League",
+					inline: true,
+				},
+				{ name: "\u200B", value: "\u200B", inline: false },
+				{
+					name: "Players",
+					value: players
+						.map((player) => {
+							return upperCaseEveryWord(player.first_name);
+						})
+						.join(", "),
+				}
+			);
 
-		interaction.reply(`Successfully created game`);
+		const button = new ActionRowBuilder().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`Confirm`)
+				.setStyle(ButtonStyle.Success)
+				.setEmoji("✔"),
+			new ButtonBuilder()
+				.setCustomId(`Decline`)
+				.setStyle(ButtonStyle.Danger)
+				.setEmoji("✖")
+		);
+
+		const message = await interaction.reply({
+			embeds: [confirmationEmbed],
+			components: [button],
+			ephemeral: true,
+		});
+		const collector = await message.createMessageComponentCollector();
+
+		collector.on("collect", async (i) => {
+			if (i.user.id !== interaction.user.id) {
+				return await i.reply({
+					content: `Only ${interaction.user.tag} can use these buttons!`,
+					ephemeral: true,
+				});
+			}
+
+			switch (i.customId) {
+				case "Confirm":
+					await db.collection("Games").create(data);
+					await i.update({
+						content: `Successfully created game`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+				case "Decline":
+					await i.update({
+						content: `Stopped creation of game`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+			}
+		});
 	},
 };

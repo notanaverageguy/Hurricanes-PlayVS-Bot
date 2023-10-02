@@ -31,7 +31,9 @@ module.exports = {
 					"https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp",
 				url: "https://discord.js.org",
 			})
-			.setFooter({text: `Page ${page} out of ${playerList.totalPages}`});
+			.setFooter({
+				text: `Page ${page} out of ${playerList.totalPages}`,
+			});
 
 		for (const player of playerList.items) {
 			const team = await db.collection("Teams").getOne(player.team);

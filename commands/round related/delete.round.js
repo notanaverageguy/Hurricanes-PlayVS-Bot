@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { PermissionsBitField } = require("discord.js");
 const { db } = require("../../libs/database.js");
-const config = require('../../config.json');
+const config = require("../../config.json");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("delete-round")
