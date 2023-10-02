@@ -85,6 +85,9 @@ client.on("interactionCreate", async (interaction) => {
 
 	//const auditChannel = client.channels.cache.get("id");
 
+	console.log(interaction);
+
+
 	try {
 		// Making sure they have permissions
 		if (command.permissions > 0) {
