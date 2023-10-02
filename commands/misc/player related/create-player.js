@@ -46,8 +46,8 @@ module.exports = {
 
 	async execute(interaction) {
 		const data = {
-			first_name: interaction.options.getString("firstname"),
-			last_name: interaction.options.getString("lastname"),
+			first_name: interaction.options.getString("firstname").trim().toLowerCase(),
+			last_name: interaction.options.getString("lastname").trim().toLowerCase(),
 			role: interaction.options.getString("role"),
 			team: interaction.options.getString("team"),
 			games_played: 0,

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField } = require("discord.js");
 const { db, findPlayer } = require("../../libs/database.js");
 
 module.exports = {
@@ -57,9 +57,7 @@ module.exports = {
 				.setRequired(false)
 		),
 	args: [],
-	user_permissions: [
-		PermissionsBitField.Flags.ManageNicknames
-	],
+	user_permissions: [PermissionsBitField.Flags.ManageNicknames],
 	bot_permissions: [],
 
 	async execute(interaction) {
@@ -73,7 +71,10 @@ module.exports = {
 
 		const player = await findPlayer(search);
 		if (player == null)
-			return interaction.reply(`No player found with search ${search}`);
+			return interaction.reply({
+				content: `No player found with search ${search}`,
+				ephemeral: true,
+			});
 
 		if (first_name != null) player.first_name = first_name;
 		if (last_name != null) player.last_name = last_name;
