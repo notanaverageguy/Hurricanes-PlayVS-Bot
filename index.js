@@ -69,7 +69,7 @@ for (const file of eventFiles) {
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
 	} else {
-		client.on(event.name, (...args) => event.execute(...args, connection));
+		client.on(event.name, (...args) => event.execute(client, ...args));
 	}
 }
 
@@ -80,13 +80,6 @@ client.on("interactionCreate", async (interaction) => {
 	const command = client.commands.get(interaction.commandName);
 
 	if (!command) return;
-
-	//Logging to channel
-
-	//const auditChannel = client.channels.cache.get("id");
-
-	console.log(interaction);
-
 
 	try {
 		// Making sure they have permissions
