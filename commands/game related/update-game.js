@@ -46,7 +46,7 @@ module.exports = {
 
 	args: [],
 	user_permissions: [
-		PermissionsBitField.Flags.ViewAuditLog
+		PermissionsBitField.Flags.ManageNicknames
 	],
 	bot_permissions: [],
 

@@ -41,7 +41,9 @@ module.exports = {
 				)
 		),
 	args: [],
-	user_permissions: [],
+	user_permissions: [
+		PermissionsBitField.Flags.ManageNicknames
+	],
 	bot_permissions: [],
 
 	async execute(interaction) {
