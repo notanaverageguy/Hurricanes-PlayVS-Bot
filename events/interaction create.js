@@ -1,3 +1,5 @@
+const config = require(`../config.json`);
+
 module.exports = {
 	name: "interactionCreate",
 	once: false,
@@ -5,7 +7,7 @@ module.exports = {
 		if (!interaction.isChatInputCommand()) return;
 
 		//Logging to channel
-		const auditChannel = client.channels.cache.get("1158227537181294593");
+		const auditChannel = client.channels.cache.get(config.auditChannelID);
 		auditChannel.send(
 			`\`${interaction.user.displayName}\` sent command \`${interaction.commandName}\``
 		);
