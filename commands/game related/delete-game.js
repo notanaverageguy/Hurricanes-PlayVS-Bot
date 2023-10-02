@@ -4,12 +4,12 @@ const { db } = require("../../libs/database.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("delete-player")
-		.setDescription("Delete a player's profile")
+		.setName("delete-game")
+		.setDescription("Delete a game")
 		.addStringOption((option) =>
 			option
 				.setName("id")
-				.setDescription("ID of player")
+				.setDescription("ID of the game")
 				.setRequired(true)
 		),
 	args: [],
@@ -19,20 +19,20 @@ module.exports = {
 	bot_permissions: [],
 
 	async execute(interaction) {
-		const playerID = interaction.options.getString("id");
+		const gameID = interaction.options.getString("id");
 
 		try {
-			await db.collection("Players").delete(playerID);
+			await db.collection("Games").delete(gameID);
 		} catch (error) {
             console.log(error)
 			if (error.response.code == 404)
-				interaction.reply(`\`${playerID}\` did not exist in the database`);
+				interaction.reply(`\`${gameID}\` did not exist in the database`);
 
             if(error.response.code == 400)
-                interaction.reply(`Failed to delete record.\nPlayer has relations to rounds, make sure to remove player from all rounds and games.\nFor assistance contact naag`);
+                interaction.reply(`Failed to delete record. \nGame has relations to rounds, make sure to remove game from all rounds.\nFor assistance contact naag`);
 			return;
 		}
 
-		interaction.reply(`Successfully deleted profile for ${playerID}`);
+		interaction.reply(`Successfully deleted game ${gameID}`);
 	},
 };
