@@ -42,7 +42,7 @@ module.exports = {
 		});
 		const confirmationEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)
-			.setTitle("Confirm deletion creation")
+			.setTitle("Confirm deletion of game")
 			.setAuthor({
 				name: config.embeds.author.name,
 				iconURL: config.embeds.author.iconURL,

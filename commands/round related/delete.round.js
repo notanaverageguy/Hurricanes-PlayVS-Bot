@@ -27,25 +27,114 @@ module.exports = {
 
 	async execute(interaction) {
 		const roundID = interaction.options.getString("id");
-
-		try {
-			await db.collection("Rounds").delete(roundID);
-		} catch (error) {
-			console.log(error);
-			if (error.response.code == 404)
-				interaction.reply({
+		const round = await db
+			.collection("Rounds")
+			.getOne(roundID)
+			.catch((error) => {
+				return interaction.reply({
 					content: `\`${roundID}\` did not exist in the database`,
 					ephemeral: true,
 				});
+			});
 
-			if (error.response.code == 400)
-				interaction.reply({
-					content: `Failed to delete record. \nRound has relationship to something somehow\nNo idea how this error occured\<@${config.owner}>`,
+		const confirmationEmbed = new EmbedBuilder()
+			.setColor(0x0099ff)
+			.setTitle("Confirm deletion of round")
+			.setAuthor({
+				name: config.embeds.author.name,
+				iconURL: config.embeds.author.iconURL,
+				url: config.embeds.author.url,
+			})
+			.addFields(
+				{
+					name: "Opponent",
+					value: upperCaseEveryWord(round.opponent),
+					inline: true,
+				},
+				{
+					name: "Score",
+					value: upperCaseEveryWord(round.score),
+					inline: true,
+				},
+				{
+					name: "Game ID",
+					value: `${round.game}`,
+					inline: true,
+				},
+				{ name: "\u200B", value: "\u200B", inline: false },
+				{
+					name: "Team",
+					value:
+                    round.team == "lbvz4f8cs2cwgsg"
+							? "Smash"
+							: round.team == "v799hjxptlm89pi"
+							? "League"
+							: "Rocket League",
+					inline: true,
+				}
+			)
+			.setFooter({ text: `Played on ${round.played}` });
+
+		const players = [];
+		for (var player of round.players) {
+			player = await db.collection("Players").getOne(player);
+			players.push(player.first_name);
+		}
+		confirmationEmbed.addFields({
+			name: "Players",
+			value: players
+				.map((player) => {
+					return upperCaseEveryWord(player);
+				})
+				.join(", "),
+			inline: true,
+		});
+
+		const button = new ActionRowBuilder().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`Confirm`)
+				.setStyle(ButtonStyle.Success)
+				.setEmoji("✔"),
+			new ButtonBuilder()
+				.setCustomId(`Decline`)
+				.setStyle(ButtonStyle.Danger)
+				.setEmoji("✖")
+		);
+
+		const message = await interaction.reply({
+			embeds: [confirmationEmbed],
+			components: [button],
+			ephemeral: true,
+		});
+		const collector = await message.createMessageComponentCollector();
+
+		collector.on("collect", async (i) => {
+			if (i.user.id !== interaction.user.id) {
+				return await i.reply({
+					content: `Only ${interaction.user.tag} can use these buttons!`,
 					ephemeral: true,
 				});
-			return;
-		}
+			}
 
-		interaction.reply(`Successfully deleted game ${roundID}`);
+			switch (i.customId) {
+				case "Confirm":
+					await db.collection("Rounds").delete(roundID);
+					await i.update({
+						content: `Successfully deleted round`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+				case "Decline":
+					await i.update({
+						content: `Stopped deletion of round`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+			}
+		});
 	},
 };
