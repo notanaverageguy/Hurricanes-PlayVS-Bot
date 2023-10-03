@@ -1,6 +1,15 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const {
+	SlashCommandBuilder,
+	PermissionsBitField,
+	EmbedBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+} = require("discord.js");
 
-const { db } = require("../../libs/database.js");
+const { db, findPlayer } = require("../../libs/database.js");
+const { upperCaseEveryWord, getTeamName } = require("../../libs/utils.js");
+const config = require("../../config.json");
 
 module.exports = {
 	data: new SlashCommandBuilder()
