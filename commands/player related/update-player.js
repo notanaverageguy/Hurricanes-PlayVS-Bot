@@ -165,7 +165,7 @@ module.exports = {
 				case "Confirm":
 					await db.collection("Players").update(player.id, data);
 					await i.update({
-						content: `Successfully deleted player`,
+						content: `Successfully updated player`,
 						embeds: [],
 						components: [],
 						ephemeral: true,
@@ -173,7 +173,7 @@ module.exports = {
 					break;
 				case "Decline":
 					await i.update({
-						content: `Stopped deletion of player`,
+						content: `Stopped updating player`,
 						embeds: [],
 						components: [],
 						ephemeral: true,

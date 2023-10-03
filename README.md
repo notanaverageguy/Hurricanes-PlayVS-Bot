@@ -1,10 +1,13 @@
 # Hurricanes-PlayVS-Bot
+
 Offical Discord bot for the Hurricanes Esports team.
 
-- [Installation](#installation)
-- [Database setup](#database-setup)
+-   [Installation](#installation)
+-   [Database setup](#database-setup)
 
 ## Installation
+
+#### Fill [config file]('example config.json') and rename to config.json
 
 ### Node.js (via npm)
 
@@ -14,47 +17,17 @@ npm install
 
 ### Database collections setup (via [PocketBase](https://pocketbase.io/docs))
 
-#### Teams
-
-> All API rules are public
-- name: string
-- players: number
-- captains: number
-
-#### Players
-
-> All API rules are public
-- first_name: string
-- last_name: string
-- role: string
-- team: singular relationship with Teams
-- games_played: numer
-- games_won: number
-- games_lost: number
-
-#### Games
-
-> All API rules are public
-- opponent: string
-- score: string
-- win: boolean
-- team: singular relationship with Teams
-- players: multiple relationship with Players
-- played: datetime
-
-#### Rounds
-
-> All API rules are public
-- opponent: string
-- score: string
-- win: boolean
-- game: singular relationship with Games
-- players: multiple relationship with Players
-- played: datetime
+-   Launch pocketbase using ./pocketbase serve
+-   Create first administrator profile
+-   Go to settings -> import collections
+-   Paste data found in [pb_schema.json](pb_schema.json)
 
 ## Usage
+
 ```sh
+./pocketbase serve
 node .
 ```
+
 > This project does require you to have Node.JS installed
 > Node.JS can be found [here](https://nodejs.org)

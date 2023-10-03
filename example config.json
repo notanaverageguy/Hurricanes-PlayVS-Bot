@@ -1,0 +1,15 @@
+{
+	"token": "",
+	"clientID": "",
+	"devGuildID": "",
+	"reportingChannelID": "",
+	"auditChannelID": "",
+	"owner": "",
+	"embeds": {
+		"author": {
+			"name": "",
+			"iconURL": "",
+			"url": ""
+		}
+	}
+}

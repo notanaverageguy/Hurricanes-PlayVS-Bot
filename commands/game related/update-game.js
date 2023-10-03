@@ -64,12 +64,18 @@ module.exports = {
 		const time = interaction.options.getString("time");
 		var playerSearches = interaction.options.getString("players");
 
-		const game = await db
+		var game = await db
 			.collection("Games")
 			.getOne(id)
 			.catch(() => {
 				return null;
 			});
+
+		const currentPlayers = [];
+		for (const id of game.players) {
+			const player = await db.collection("Players").getOne(id);
+			currentPlayers.push(player);
+		}
 
 		const data = {};
 		if (team != null) data.team = team;
@@ -89,27 +95,145 @@ module.exports = {
 				});
 			data.played = `${time} 15:30:00Z`;
 		}
+
+		const players = [];
 		if (playerSearches != null) {
 			playerSearches = playerSearches.split(",").map((player) => {
 				return player.trim();
 			});
 
-			const players = [];
 			for (var name of playerSearches) {
 				const player = await findPlayer(name);
+				players.push(player);
 				if (!player)
 					return interaction.reply({
 						content: `Invalid player search \`${name}\``,
 						ephemeral: true,
 					});
-				players.push(player);
 			}
 			data.players = players.map((player) => {
 				return player.id;
 			});
 		}
 
-		await db.collection("Games").update(id, data);
-		interaction.reply(`Successfully updated game`);
+		if (Object.keys(data).length == 0)
+			return interaction.reply({
+				content: `You updated no data`,
+				ephemeral: true,
+			});
+
+		console.log(data.players);
+
+		const confirmationEmbed = new EmbedBuilder()
+			.setColor(0x0099ff)
+			.setTitle("Confirm game update")
+			.setAuthor({
+				name: config.embeds.author.name,
+				iconURL: config.embeds.author.iconURL,
+				url: config.embeds.author.url,
+			})
+			.addFields(
+				{
+					name: "Opponent",
+					value: `${
+						data.opponent != undefined
+							? `~~${upperCaseEveryWord(
+									game.opponent
+							  )}~~ -> ${upperCaseEveryWord(data.opponent)}`
+							: `${upperCaseEveryWord(game.opponent)}`
+					}`,
+				},
+				{
+					name: "Score",
+					value: `${
+						data.score != undefined
+							? `~~${upperCaseEveryWord(
+									game.score
+							  )}~~ -> ${upperCaseEveryWord(data.score)}`
+							: `${upperCaseEveryWord(game.score)}`
+					}`,
+				},
+				{
+					name: "Team",
+					value:
+						data.team != undefined
+							? `~~${getTeamName(game.team)}~~ -> ${getTeamName(
+									data.team
+							  )}`
+							: `${getTeamName(game.team)}`,
+				},
+				{
+					name: "Players",
+					value:
+						data.players != undefined
+							? `~~${currentPlayers
+									.map((player) => {
+										return upperCaseEveryWord(
+											player.first_name
+										);
+									})
+									.join(", ")}~~ -> ${players
+									.map((player) => {
+										return upperCaseEveryWord(
+											player.first_name
+										);
+									})
+									.join(", ")}`
+							: `${players
+									.map((player) => {
+										return upperCaseEveryWord(
+											player.first_name
+										);
+									})
+									.join(", ")}`,
+				}
+			);
+
+		const button = new ActionRowBuilder().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`Confirm`)
+				.setStyle(ButtonStyle.Success)
+				.setEmoji("✔"),
+			new ButtonBuilder()
+				.setCustomId(`Decline`)
+				.setStyle(ButtonStyle.Danger)
+				.setEmoji("✖")
+		);
+
+		const message = await interaction.reply({
+			embeds: [confirmationEmbed],
+			components: [button],
+			ephemeral: true,
+		});
+		const collector = await message.createMessageComponentCollector();
+
+		collector.on("collect", async (i) => {
+			if (i.user.id !== interaction.user.id) {
+				return await i.reply({
+					content: `Only ${interaction.user.tag} can use these buttons!`,
+					ephemeral: true,
+				});
+			}
+
+			switch (i.customId) {
+				case "Confirm":
+					await db.collection("Games").update(game.id, data);
+					await i.update({
+						content: `Successfully updated game`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+				case "Decline":
+					await i.update({
+						content: `Stopped update for game`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+			}
+		});
 	},
 };
