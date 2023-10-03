@@ -1,6 +1,15 @@
-const { SlashCommandBuilder } = require("discord.js");
-const { PermissionsBitField } = require("discord.js");
-const { db } = require("../../libs/database.js");
+const {
+	SlashCommandBuilder,
+	PermissionsBitField,
+	EmbedBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+} = require("discord.js");
+
+const { db, findPlayer } = require("../../libs/database.js");
+const { upperCaseEveryWord } = require("../../libs/utils.js");
+const config = require("../../config.json");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -18,25 +27,98 @@ module.exports = {
 
 	async execute(interaction) {
 		const playerID = interaction.options.getString("id");
-
-		try {
-			await db.collection("Players").delete(playerID);
-		} catch (error) {
-			console.log(error);
-			if (error.response.code == 404)
-				interaction.reply({
+		const player = await db
+			.collection("Players")
+			.getOne(playerID)
+			.catch((error) => {
+				return interaction.reply({
 					content: `\`${playerID}\` did not exist in the database`,
 					ephemeral: true,
 				});
+			});
 
-			if (error.response.code == 400)
-				interaction.reply({
-					content: `Failed to delete record.\nPlayer has relations to rounds, make sure to remove player from all rounds and games.\nFor assistance contact naag`,
+		const confirmationEmbed = new EmbedBuilder()
+			.setColor(0x0099ff)
+			.setTitle("Confirm deletion creation")
+			.setAuthor({
+				name: config.embeds.author.name,
+				iconURL: config.embeds.author.iconURL,
+				url: config.embeds.author.url,
+			})
+			.addFields(
+				{
+					name: "First Name",
+					value: upperCaseEveryWord(player.first_name),
+					inline: true,
+				},
+				{
+					name: "Last Name",
+					value: upperCaseEveryWord(player.last_name),
+					inline: true,
+				},
+				{ name: "\u200B", value: "\u200B", inline: false },
+				{
+					name: "Team",
+					value:
+						player.team == "lbvz4f8cs2cwgsg"
+							? "Smash"
+							: player.team == "v799hjxptlm89pi"
+							? "League"
+							: "Rocket League",
+					inline: true,
+				},
+				{
+					name: "Role",
+					value: player.role,
+					inline: true,
+				}
+			);
+
+		const button = new ActionRowBuilder().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`Confirm`)
+				.setStyle(ButtonStyle.Success)
+				.setEmoji("✔"),
+			new ButtonBuilder()
+				.setCustomId(`Decline`)
+				.setStyle(ButtonStyle.Danger)
+				.setEmoji("✖")
+		);
+
+		const message = await interaction.reply({
+			embeds: [confirmationEmbed],
+			components: [button],
+			ephemeral: true,
+		});
+		const collector = await message.createMessageComponentCollector();
+
+		collector.on("collect", async (i) => {
+			if (i.user.id !== interaction.user.id) {
+				return await i.reply({
+					content: `Only ${interaction.user.tag} can use these buttons!`,
 					ephemeral: true,
 				});
-			return;
-		}
+			}
 
-		interaction.reply(`Successfully deleted profile for ${playerID}`);
+			switch (i.customId) {
+				case "Confirm":
+					await db.collection("Players").delete(playerID);
+					await i.update({
+						content: `Successfully deleted player`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+				case "Decline":
+					await i.update({
+						content: `Stopped deletion of player`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+			}
+		});
 	},
 };

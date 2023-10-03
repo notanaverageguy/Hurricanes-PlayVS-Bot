@@ -9,6 +9,7 @@ const {
 
 const { db, findPlayer } = require("../../libs/database.js");
 const { upperCaseEveryWord } = require("../../libs/utils.js");
+const config = require("../../config.json");
 
 module.exports = {
 	data: new SlashCommandBuilder()
