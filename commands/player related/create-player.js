@@ -8,7 +8,7 @@ const {
 } = require("discord.js");
 
 const { db, findPlayer } = require("../../libs/database.js");
-const { upperCaseEveryWord } = require("../../libs/utils.js");
+const { upperCaseEveryWord, getTeamName } = require("../../libs/utils.js");
 const config = require("../../config.json");
 
 module.exports = {
@@ -74,10 +74,9 @@ module.exports = {
 			.setColor(0x0099ff)
 			.setTitle("Confirm player creation")
 			.setAuthor({
-				name: "Bot made by Naag",
-				iconURL:
-					"https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp",
-				url: "https://discord.js.org",
+				name: config.embeds.author.name,
+				iconURL: config.embeds.author.iconURL,
+				url: config.embeds.author.url,
 			})
 			.addFields(
 				{

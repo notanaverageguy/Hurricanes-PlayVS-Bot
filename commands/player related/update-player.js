@@ -1,6 +1,15 @@
-const { SlashCommandBuilder } = require("discord.js");
-const { PermissionsBitField } = require("discord.js");
+const {
+	SlashCommandBuilder,
+	PermissionsBitField,
+	EmbedBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+} = require("discord.js");
+
 const { db, findPlayer } = require("../../libs/database.js");
+const { upperCaseEveryWord, getTeamName } = require("../../libs/utils.js");
+const config = require("../../config.json");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -43,18 +52,6 @@ module.exports = {
 				.setDescription("The team the player is on")
 				.setRequired(false)
 				.addChoices({ name: "Rocket League", value: "e8mjbfqf0ho1wz2" })
-		)
-		.addIntegerOption((option) =>
-			option
-				.setName("games_won")
-				.setDescription("Number of games won")
-				.setRequired(false)
-		)
-		.addIntegerOption((option) =>
-			option
-				.setName("games_lost")
-				.setDescription("Number of games lost")
-				.setRequired(false)
 		),
 	args: [],
 	user_permissions: [PermissionsBitField.Flags.ManageNicknames],
@@ -62,12 +59,26 @@ module.exports = {
 
 	async execute(interaction) {
 		const search = interaction.options.getString("search");
-		const first_name = interaction.options.getString("firstname");
-		const last_name = interaction.options.getString("lastname");
+		const first_name = interaction.options
+			.getString("firstname")
+			?.toLowerCase();
+		const last_name = interaction.options
+			.getString("lastname")
+			?.toLowerCase();
 		const team = interaction.options.getString("team");
 		const role = interaction.options.getString("role");
-		const won = interaction.options.getInteger("games_won");
-		const lost = interaction.options.getInteger("games_lost");
+
+		var data = {};
+		if (first_name != null) data.first_name = first_name;
+		if (last_name != null) data.last_name = last_name;
+		if (team != null) data.team = team;
+		if (role != null) data.role = role;
+
+		if (Object.keys(data).length == 0)
+			return interaction.reply({
+				content: `You updated no data`,
+				ephemeral: true,
+			});
 
 		const player = await findPlayer(search);
 		if (player == null)
@@ -76,17 +87,99 @@ module.exports = {
 				ephemeral: true,
 			});
 
-		if (first_name != null) player.first_name = first_name;
-		if (last_name != null) player.last_name = last_name;
-		if (team != null) player.team = team;
-		if (role != null) player.role = role;
-		if (won != null) player.games_won = won;
-		if (lost != null) player.games_lost = lost;
+		const confirmationEmbed = new EmbedBuilder()
+			.setColor(0x0099ff)
+			.setTitle("Confirm player update")
+			.setAuthor({
+				name: config.embeds.author.name,
+				iconURL: config.embeds.author.iconURL,
+				url: config.embeds.author.url,
+			})
+			.addFields(
+				{
+					name: "First name",
+					value: `${
+						data.first_name != undefined
+							? `~~${upperCaseEveryWord(
+									player.first_name
+							  )}~~ -> ${upperCaseEveryWord(data.first_name)}`
+							: `${upperCaseEveryWord(player.first_name)}`
+					}`,
+				},
+				{
+					name: "Last name",
+					value: `${
+						data.last_name != undefined
+							? `~~${upperCaseEveryWord(
+									player.last_name
+							  )}~~ -> ${upperCaseEveryWord(data.last_name)}`
+							: `${upperCaseEveryWord(player.last_name)}`
+					}`,
+				},
+				{
+					name: "Team",
+					value:
+						data.team != undefined
+							? `~~${getTeamName(player.team)}~~ -> ${getTeamName(
+									data.team
+							  )}`
+							: `${getTeamName(player.team)}`,
+				},
+				{
+					name: "Role",
+					value: `${
+						data.role != undefined
+							? `~~${player.role}~~ -> ${data.role}`
+							: `${player.role}`
+					}`,
+				}
+			);
 
-		player.games_played = player.games_won + player.games_lost;
-		await db.collection("Players").update(playerID, player);
-		interaction.reply(
-			`Successfully updated player **${player.first_name}**`
+		const button = new ActionRowBuilder().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`Confirm`)
+				.setStyle(ButtonStyle.Success)
+				.setEmoji("✔"),
+			new ButtonBuilder()
+				.setCustomId(`Decline`)
+				.setStyle(ButtonStyle.Danger)
+				.setEmoji("✖")
 		);
+
+		const message = await interaction.reply({
+			embeds: [confirmationEmbed],
+			components: [button],
+			ephemeral: true,
+		});
+		const collector = await message.createMessageComponentCollector();
+
+		collector.on("collect", async (i) => {
+			if (i.user.id !== interaction.user.id) {
+				return await i.reply({
+					content: `Only ${interaction.user.tag} can use these buttons!`,
+					ephemeral: true,
+				});
+			}
+
+			switch (i.customId) {
+				case "Confirm":
+					await db.collection("Players").update(player.id, data);
+					await i.update({
+						content: `Successfully deleted player`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+				case "Decline":
+					await i.update({
+						content: `Stopped deletion of player`,
+						embeds: [],
+						components: [],
+						ephemeral: true,
+					});
+					break;
+			}
+		});
 	},
 };

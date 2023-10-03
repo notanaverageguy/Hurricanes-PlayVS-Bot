@@ -123,10 +123,9 @@ module.exports = {
 			.setColor(0x0099ff)
 			.setTitle("Confirm player creation")
 			.setAuthor({
-				name: "Bot made by Naag",
-				iconURL:
-					"https://cdn.discordapp.com/avatars/952239410055888916/48e9b5fcc52babe9ad6e68d49dad124c.webp",
-				url: "https://discord.js.org",
+				name: config.embeds.author.name,
+				iconURL: config.embeds.author.iconURL,
+				url: config.embeds.author.url,
 			})
 			.addFields(
 				{
@@ -167,7 +166,7 @@ module.exports = {
 							return upperCaseEveryWord(player.first_name);
 						})
 						.join(", "),
-					inline: true
+					inline: true,
 				}
 			);
 
