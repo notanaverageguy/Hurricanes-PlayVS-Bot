@@ -104,12 +104,12 @@ module.exports = {
 
 			for (var name of playerSearches) {
 				const player = await findPlayer(name);
-				players.push(player);
 				if (!player)
 					return interaction.reply({
 						content: `Invalid player search \`${name}\``,
 						ephemeral: true,
 					});
+				players.push(player);
 			}
 			data.players = players.map((player) => {
 				return player.id;
@@ -121,8 +121,6 @@ module.exports = {
 				content: `You updated no data`,
 				ephemeral: true,
 			});
-
-		console.log(data.players);
 
 		const confirmationEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)
