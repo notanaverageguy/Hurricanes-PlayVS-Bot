@@ -40,6 +40,16 @@ module.exports = {
 			.setTitle("Player Commands")
 			.addFields(
 				{
+					name: "/link",
+					value: "Links a discord account to a player",
+					inline: true,
+				},
+				{
+					name: "/unlink",
+					value: "Unlinks a discord account from a player",
+					inline: true,
+				},
+				{
 					name: "/create-player",
 					value: "Creates a player in the database",
 					inline: true,

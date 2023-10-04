@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 const { db, findPlayer, calcPlayerWins } = require("../../libs/database.js");
-
+const config = require('../../config.json');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("player")
@@ -12,7 +12,7 @@ module.exports = {
 				.setDescription(
 					"Can search by id, first name, last name, first and last name"
 				)
-				.setRequired(true)
+				.setRequired(false)
 		),
 
 	args: [],
@@ -21,17 +21,38 @@ module.exports = {
 
 	async execute(interaction) {
 		const search = interaction.options.getString("search");
-		const players = await db.collection("Players").getFullList({
-			filter: `id = "${search}" || first_name = "${search}" || last_name = "${search}" || (first_name = "${
-				search.split(" ")[0]
-			}" && last_name = "${search.split(" ")[1]}")`,
-		});
 
-		if (!players.length)
+		var players;
+		if (search == null) {
+			var player = await db
+				.collection("Players")
+				.getFirstListItem(`discord_id = '${interaction.user.id}'`)
+				.catch(() => {
+					return null;
+				});
+
+			if (player == null) {
+				return interaction.reply({
+					content: "Accont not linked to a player",
+					ephemeral: true,
+				});
+			}
+
+			players = [player];
+		} else {
+			players = await db.collection("Players").getFullList({
+				filter: `id = "${search}" || first_name = "${search}" || last_name = "${search}" || (first_name = "${
+					search.split(" ")[0]
+				}" && last_name = "${search.split(" ")[1]}")`,
+			});
+
+			if (!players.length)
 			return interaction.reply({
 				content: `No player found with search ${search}`,
 				ephemeral: true,
 			});
+
+		}
 
 		const embeds = [];
 		for (var player of players) {
