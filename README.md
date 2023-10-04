@@ -7,7 +7,7 @@ Offical Discord bot for the Hurricanes Esports team.
 
 ## Installation
 
-#### Fill [config file]('example config.json') and rename to config.json
+#### Fill [config file](example.config.json) and rename to config.json
 
 ### Node.js (via npm)
 
