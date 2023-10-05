@@ -55,7 +55,7 @@ module.exports = {
 				ephemeral: true,
 			});
 
-		console.log(player.discord_id)
+		console.log(player.discord_id);
 		if (player.discord_id)
 			return interaction.reply({
 				content: "Player already linked",
@@ -124,9 +124,25 @@ module.exports = {
 
 			switch (i.customId) {
 				case "Confirm":
+					const tempPlayer = await db
+						.collection("Players")
+						.getFirstListItem(`discord_id = '${i.user.id}'`)
+						.catch(() => {
+							return null;
+						});
+
+					if(tempPlayer != null ) {
+						return i.update({
+							content: "Accont already linked to a player",
+							embeds: [],
+							components: [],
+							ephemeral: true,
+						});
+					}
+
 					await db
 						.collection("Players")
-						.update(player.id, { discord_id: user.id });
+						.update(player.id, { discord_id: i.user.id });
 					await i.update({
 						content: `Successfully linked player`,
 						embeds: [],
