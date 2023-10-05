@@ -21,7 +21,7 @@ module.exports = {
 				.setDescription(
 					"Can search by id, first name, last name, first and last name"
 				)
-				.setRequired(true)
+				.setRequired(false)
 		)
 		.addStringOption((option) =>
 			option
@@ -54,11 +54,45 @@ module.exports = {
 				.addChoices({ name: "Rocket League", value: "e8mjbfqf0ho1wz2" })
 		),
 	args: [],
-	user_permissions: [PermissionsBitField.Flags.ManageNicknames],
+	user_permissions: [],
 	bot_permissions: [],
 
 	async execute(interaction) {
 		const search = interaction.options.getString("search");
+
+		var player;
+
+		if (search == null) {
+			player = await db
+				.collection("Players")
+				.getFirstListItem(`discord_id = '${interaction.user.id}'`)
+				.catch(() => {
+					return null;
+				});
+			if (player == null)
+				return interaction.reply({
+					content: `Account not linked to a player`,
+					ephemeral: true,
+				});
+		} else {
+			var userPerms = new PermissionsBitField(
+				interaction.memberPermissions
+			);
+
+			if (!userPerms.has([PermissionsBitField.Flags.ManageNicknames]))
+				return await interaction.reply({
+					content: "User is missing permissions for this",
+					ephemeral: true,
+				});
+
+			player = await findPlayer(search);
+			if (player == null)
+				return interaction.reply({
+					content: `No player found with search ${search}`,
+					ephemeral: true,
+				});
+		}
+
 		const first_name = interaction.options
 			.getString("firstname")
 			?.toLowerCase();
@@ -77,13 +111,6 @@ module.exports = {
 		if (Object.keys(data).length == 0)
 			return interaction.reply({
 				content: `You updated no data`,
-				ephemeral: true,
-			});
-
-		const player = await findPlayer(search);
-		if (player == null)
-			return interaction.reply({
-				content: `No player found with search ${search}`,
 				ephemeral: true,
 			});
 
