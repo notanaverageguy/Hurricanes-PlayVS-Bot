@@ -40,6 +40,12 @@ module.exports = {
 		)
 		.addStringOption((option) =>
 			option
+				.setName("score")
+				.setDescription("SMASH ONLY")
+				.setRequired(false)
+		)
+		.addStringOption((option) =>
+			option
 				.setName("players")
 				.setDescription(
 					"Seperate by comma. Can search by id, first name, last name, first and last name"
@@ -62,6 +68,7 @@ module.exports = {
 		const team = interaction.options.getString("team");
 		const opponent = interaction.options.getString("opponent");
 		const time = interaction.options.getString("time");
+		const score = interaction.options.getString("score");
 		var playerSearches = interaction.options.getString("players");
 
 		var game = await db
@@ -80,6 +87,11 @@ module.exports = {
 		const data = {};
 		if (team != null) data.team = team;
 		if (opponent != null) data.opponent = opponent.toLowerCase();
+		if (
+			score &&
+			(game.team == "lbvz4f8cs2cwgsg") | (team == "lbvz4f8cs2cwgsg")
+		)
+			data.score = score;
 		if (game == null)
 			return interaction.reply({
 				content: `Game with id \`${id}\` not found`,
@@ -121,6 +133,7 @@ module.exports = {
 				content: `You updated no data`,
 				ephemeral: true,
 			});
+		console.log(data);
 
 		const confirmationEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)
@@ -177,13 +190,15 @@ module.exports = {
 										);
 									})
 									.join(", ")}`
-							: `${players
+							: currentPlayers.length > 0
+							? `${currentPlayers
 									.map((player) => {
 										return upperCaseEveryWord(
 											player.first_name
 										);
 									})
-									.join(", ")}`,
+									.join(", ")}`
+							: "No players",
 				}
 			);
 

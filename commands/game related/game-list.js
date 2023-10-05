@@ -29,7 +29,7 @@ module.exports = {
 	async execute(interaction) {
 		const page = interaction.options.getInteger("page") ?? 1;
 		var gameList = await db.collection("Games").getList(page, 9, {
-			sort: "played",
+			sort: "-played",
 		});
 		const exampleEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)

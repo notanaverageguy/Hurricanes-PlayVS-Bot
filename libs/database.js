@@ -30,6 +30,16 @@ async function calcPlayerWins(id) {
 }
 
 async function calcGameScore(id) {
+	const game = await db
+		.collection("Games")
+		.getOne(id)
+		.catch(() => {
+			return;
+		});
+	if(game.team == "lbvz4f8cs2cwgsg") {
+		return game;
+	}
+
 	const rounds = await db
 		.collection("Rounds")
 		.getFullList({
@@ -53,12 +63,10 @@ async function calcGameScore(id) {
 		}
 	}
 
-	return await db
-		.collection("Games")
-		.update(id, {
-			score: `${data.wins} - ${data.losses}`,
-			win: data.wins > data.losses,
-		});
+	return await db.collection("Games").update(id, {
+		score: `${data.wins} - ${data.losses}`,
+		win: data.wins > data.losses,
+	});
 }
 
 async function findPlayer(search) {
