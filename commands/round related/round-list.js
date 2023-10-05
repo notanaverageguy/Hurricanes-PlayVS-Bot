@@ -54,6 +54,6 @@ module.exports = {
 			});
 		}
 
-		interaction.reply({ embeds: [exampleEmbed] });
+		interaction.reply({ embeds: [exampleEmbed], ephemeral: true });
 	},
 };

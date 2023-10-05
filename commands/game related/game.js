@@ -3,6 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { db, calcGameScore } = require("../../libs/database.js");
 const { upperCaseEveryWord } = require("../../libs/utils.js");
 
+const config = require("../../config.json");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("game")
@@ -58,6 +59,7 @@ module.exports = {
 			// Getting rounds
 			const rounds = await db.collection("Rounds").getFullList({
 				filter: `game.id = "${game.id}"`,
+				sort: `round`
 			});
 
 			for (const index in rounds) {

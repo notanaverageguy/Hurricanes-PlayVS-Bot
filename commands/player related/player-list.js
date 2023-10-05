@@ -29,7 +29,7 @@ module.exports = {
 	async execute(interaction) {
 		const page = interaction.options.getInteger("page") ?? 1;
 		var playerList = await db.collection("Players").getList(page, 9, {
-			sort: "team,role",
+			sort: "team,role,last_name,first_namew",
 		});
 		const exampleEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)
@@ -46,12 +46,12 @@ module.exports = {
 		for (const player of playerList.items) {
 			const team = await db.collection("Teams").getOne(player.team);
 			exampleEmbed.addFields({
-				name: `${player.first_name} ${player.last_name}`,
+				name: `${upperCaseEveryWord(player.first_name)} ${upperCaseEveryWord(player.last_name)}`,
 				value: `\`ID: ${player.id}\`\n**Team:** ${team.name}\n**Role:** ${player.role}`,
 				inline: true,
 			});
 		}
 
-		interaction.reply({ embeds: [exampleEmbed] });
+		interaction.reply({ embeds: [exampleEmbed], ephemeral: true });
 	},
 };

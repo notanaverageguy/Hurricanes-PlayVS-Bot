@@ -7,7 +7,7 @@ const {
 	ButtonStyle,
 } = require("discord.js");
 
-const { db, findPlayer } = require("../../libs/database.js");
+const { db, findPlayer, calcGameScore } = require("../../libs/database.js");
 const { upperCaseEveryWord, getTeamName } = require("../../libs/utils.js");
 const config = require("../../config.json");
 
@@ -41,7 +41,8 @@ module.exports = {
 			})
 			.setFooter({ text: `Page ${page} out of ${gameList.totalPages}` });
 
-		for (const game of gameList.items) {
+		for (var game of gameList.items) {
+			game = await calcGameScore(game.id);
 			const team = await db.collection("Teams").getOne(game.team);
 			exampleEmbed.addFields({
 				name: `vs. ${upperCaseEveryWord(game.opponent)}`,
@@ -54,6 +55,6 @@ module.exports = {
 			});
 		}
 
-		interaction.reply({ embeds: [exampleEmbed] });
+		interaction.reply({ embeds: [exampleEmbed], ephemeral: true });
 	},
 };

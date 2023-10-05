@@ -40,12 +40,6 @@ module.exports = {
 					"Seperate by comma. Can search by id, first name, last name, first and last name"
 				)
 				.setRequired(true)
-		)
-		.addStringOption((option) =>
-			option
-				.setName("time")
-				.setDescription("YYYY-MM-DD HH:MM:SS")
-				.setRequired(true)
 		),
 
 	args: [],
@@ -71,14 +65,6 @@ module.exports = {
 				ephemeral: true,
 			});
 
-		const time = interaction.options.getString("time").trim();
-		const timeRegex =
-			/^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01]) (?:(?:[0-1]?[0-9])|(?:2[04])):(?:[0-5]?[0-9]):(?:[0-5]?[0-9])$/gm;
-		if (timeRegex.exec(time) == null)
-			return interaction.reply({
-				content: "Invalid Time",
-				ephemeral: true,
-			});
 
 		const players = [];
 		for (var name of playerSearches) {
@@ -109,13 +95,12 @@ module.exports = {
 			opponent: game.opponent,
 			round: interaction.options.getInteger("round"),
 			score: score.replace("-", " - "),
-			win: score.split("-")[0] > score.split("-")[1],
+			win: score.split("-")[0].trim() > score.split("-")[1].trim(),
 			game: game.id,
 			team: game.team,
 			players: players.map((player) => {
 				return player.id;
 			}),
-			played: `${time}Z`,
 		};
 		//await db.collection("Rounds").create(data);
 
