@@ -49,12 +49,18 @@ module.exports = {
 				return null;
 			});
 
-		if (player == null) {
+		if (player == null)
 			return interaction.reply({
 				content: "Player not found",
 				ephemeral: true,
 			});
-		}
+
+		console.log(player.discord_id)
+		if (player.discord_id)
+			return interaction.reply({
+				content: "Player already linked",
+				ephemeral: true,
+			});
 
 		player = await calcPlayerWins(player.id);
 		const team = getTeamName(player.team);
@@ -118,7 +124,9 @@ module.exports = {
 
 			switch (i.customId) {
 				case "Confirm":
-					await db.collection("Players").update(player.id, {"discord_id": user.id});
+					await db
+						.collection("Players")
+						.update(player.id, { discord_id: user.id });
 					await i.update({
 						content: `Successfully linked player`,
 						embeds: [],
