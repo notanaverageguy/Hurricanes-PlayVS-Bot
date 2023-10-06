@@ -78,6 +78,12 @@ module.exports = {
 				return null;
 			});
 
+		if (game == null)
+			return interaction.reply({
+				content: `Game with id \`${id}\` not found`,
+				ephemeral: true,
+			});
+
 		const currentPlayers = [];
 		for (const id of game.players) {
 			const player = await db.collection("Players").getOne(id);
@@ -92,11 +98,7 @@ module.exports = {
 			(game.team == "lbvz4f8cs2cwgsg") | (team == "lbvz4f8cs2cwgsg")
 		)
 			data.score = score;
-		if (game == null)
-			return interaction.reply({
-				content: `Game with id \`${id}\` not found`,
-				ephemeral: true,
-			});
+
 		if (time != null) {
 			const timeRegex =
 				/^202[3-9](?:-|\/)(?:0?[1-9]|1[0-2])(?:-|\/)(?:0?[1-9]|[12][0-9]|3[01])$/gm;

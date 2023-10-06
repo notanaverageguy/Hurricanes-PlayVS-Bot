@@ -95,7 +95,7 @@ client.on("interactionCreate", async (interaction) => {
 			}
 		}
 
-		if(command.user_permissions > 0) {
+		if (command.user_permissions > 0) {
 			var userPerms = new PermissionsBitField(
 				interaction.memberPermissions
 			);
