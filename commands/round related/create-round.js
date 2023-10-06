@@ -106,7 +106,7 @@ module.exports = {
 
 		const confirmationEmbed = new EmbedBuilder()
 			.setColor(0x0099ff)
-			.setTitle("Confirm player creation")
+			.setTitle("Confirm player creation") 
 			.setAuthor({
 				name: config.embeds.author.name,
 				iconURL: config.embeds.author.iconURL,
