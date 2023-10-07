@@ -23,3 +23,4 @@ module.exports = {
 		interaction.reply({ content: "pong", ephemeral: true });
 	},
 };
+//
